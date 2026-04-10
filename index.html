@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      /* 🌈 Gradient background */
+      background: linear-gradient(to bottom right, #8fd3f4, #4facfe);
+    }
+
+    .login-box {
+      width: 320px;
+      text-align: center;
+      color: #0b2a5b;
+    }
+
+    h1 {
+      margin-bottom: 5px;
+    }
+
+    p {
+      margin-bottom: 30px;
+      color: #1a3c6e;
+    }
+
+    input {
+      width: 100%;
+      padding: 15px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 25px;
+      outline: none;
+
+      /* glass effect */
+      background: rgba(255,255,255,0.3);
+      backdrop-filter: blur(10px);
+      color: black;
+    }
+
+    input::placeholder {
+      color: #333;
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      margin: 10px 0;
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      margin-top: 20px;
+      border: none;
+      border-radius: 30px;
+      background: #2b7cff;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    button:hover {
+      background: #1f5fd6;
+    }
+
+    .bottom-text {
+      margin-top: 20px;
+      font-size: 14px;
+    }
+
+    .bottom-text a {
+      color: #0b2a5b;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+  </style>
+</head>
+
+<body>
+
+<div class="login-box">
+
+  <h1>WELCOME</h1>
+  <p>Login to your account</p>
+
+  <input type="text" id="user" placeholder="Enter your email">
+  <input type="password" id="pass" placeholder="Enter your password">
+
+  <div class="row">
+    <span>✔ Remember Me</span>
+    <span>Forgot?</span>
+  </div>
+
+  <button onclick="login()">Login</button>
+
+  <div class="bottom-text">
+    Don’t have an account? <a href="#">Sign up</a>
+  </div>
+
+</div>
+
+<script>
+
+function login() {
+  let u = document.getElementById("user").value;
+  let p = document.getElementById("pass").value;
+
+  if(u == "keerthi" && p == "1234"){
+    localStorage.setItem("login", "true");
+    window.location.href = "dashboard.html";
+  } else {
+    alert("Wrong login ❌");
+  }
+}
+
+</script>
+
+</body>
+</html>
