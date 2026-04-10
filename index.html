@@ -11,8 +11,6 @@
       display: flex;
       justify-content: center;
       align-items: center;
-
-      /* 🌈 Gradient background */
       background: linear-gradient(to bottom right, #8fd3f4, #4facfe);
     }
 
@@ -22,15 +20,6 @@
       color: #0b2a5b;
     }
 
-    h1 {
-      margin-bottom: 5px;
-    }
-
-    p {
-      margin-bottom: 30px;
-      color: #1a3c6e;
-    }
-
     input {
       width: 100%;
       padding: 15px;
@@ -38,22 +27,8 @@
       border: none;
       border-radius: 25px;
       outline: none;
-
-      /* glass effect */
       background: rgba(255,255,255,0.3);
       backdrop-filter: blur(10px);
-      color: black;
-    }
-
-    input::placeholder {
-      color: #333;
-    }
-
-    .row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 14px;
-      margin: 10px 0;
     }
 
     button {
@@ -66,65 +41,65 @@
       color: white;
       font-size: 16px;
       cursor: pointer;
-
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     }
-
-    button:hover {
-      background: #1f5fd6;
-    }
-
-    .bottom-text {
-      margin-top: 20px;
-      font-size: 14px;
-    }
-
-    .bottom-text a {
-      color: #0b2a5b;
-      font-weight: bold;
-      text-decoration: none;
-    }
-
   </style>
+
 </head>
 
 <body>
 
 <div class="login-box">
-
   <h1>WELCOME</h1>
   <p>Login to your account</p>
 
-  <input type="text" id="user" placeholder="Enter your email">
-  <input type="password" id="pass" placeholder="Enter your password">
-
-  <div class="row">
-    <span>✔ Remember Me</span>
-    <span>Forgot?</span>
-  </div>
+  <input type="text" id="user" placeholder="Enter username">
+  <input type="password" id="pass" placeholder="Enter password">
 
   <button onclick="login()">Login</button>
-
-  <div class="bottom-text">
-    Don’t have an account? <a href="#">Sign up</a>
-  </div>
-
 </div>
 
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
 <script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyA881pfDnTS4liIEzf6-N60WX3annXXMKg",
+    authDomain: "vehicle-tracking-fc726.firebaseapp.com",
+    databaseURL: "https://vehicle-tracking-fc726-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "vehicle-tracking-fc726",
+    storageBucket: "vehicle-tracking-fc726.appspot.com",
+    messagingSenderId: "861027714152",
+    appId: "1:861027714152:web:12107c89f3fc2fa76a67dd"
+  };
 
-function login() {
-  let u = document.getElementById("user").value;
-  let p = document.getElementById("pass").value;
+  firebase.initializeApp(firebaseConfig);
 
-  if(u == "keerthi" && p == "1234"){
-    localStorage.setItem("login", "true");
-    window.location.href = "dashboard.html";
-  } else {
-    alert("Wrong login ❌");
+  function login() {
+    let u = document.getElementById("user").value.trim();
+    let p = document.getElementById("pass").value.trim();
+
+    firebase.database().ref("users/" + u).once("value")
+    .then((snapshot) => {
+      if(snapshot.exists()) {
+        let dbPass = snapshot.val().password;
+
+        if(dbPass == p) {
+          alert("Login success ✅");
+          localStorage.setItem("login", "true");
+          window.location.href = "dashboard.html";
+        } else {
+          alert("Wrong password ❌");
+        }
+      } else {
+        alert("User not found ❌");
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+      alert("Error connecting to Firebase ❌");
+    });
   }
-}
-
 </script>
 
 </body>
