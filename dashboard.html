@@ -1,91 +1,76 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Dashboard</title>
+  <title>Dashboard</title>
 
-<!-- Leaflet -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
- <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Mobile responsive -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
-body {
-  margin: 0;
-  font-family: Arial;
-  background: linear-gradient(to bottom right, #8fd3f4, #4facfe);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding:10px;
-}
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: linear-gradient(to bottom right, #8fd3f4, #4facfe);
+      display: flex;
+      justify-content: center;
+    }
 
-/* MAIN CONTAINER (IMPORTANT FIX) */
-.main {
-  width: 95%;
-  max-width: 1200px;
-  margin: auto;
-  margin-top: 20px;
-}
+    .main {
+      width: 95%;
+      max-width: 1200px;
+      margin-top: 20px;
+    }
 
-/* HEADER */
-header {
-  text-align: center;
-  color: #0b2a5b;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
+    header {
+      text-align: center;
+      font-size: 20px;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
 
-/* MAP */
-#map {
-  height: 300px;
-  width: 100%;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-}
+    #map {
+      height: 300px;
+      width: 100%;
+      border-radius: 20px;
+    }
 
-/* CARD CONTAINER */
-.container {
-  display: flex;
-  flex-direction:column;
-  gap:10px;
-  justify-content: space-between;
-  margin-top: 15px;
-}
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 15px;
+    }
 
-/* CARDS */
-.card {
-  background: rgba(255,255,255,0.3);
-  backdrop-filter: blur(10px);
-  padding: 15px;
-  border-radius: 15px;
-  width: 100%;
-  text-align: center;
-  font-size: 18px;
-  box-shadow: 0 5px 10px rgba(0,0,0,0.2);
-}
+    .card {
+      background: rgba(255,255,255,0.3);
+      padding: 15px;
+      border-radius: 15px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+    }
 
-/* BUTTON */
-button {
-  width: 100%;
-  margin-top: 20px;
-  padding: 12px;
-  border-radius: 25px;
-  border: none;
-  background: rgba(255,255,255,0.4);
-  font-size: 16px;
-  font-weight: bold;
-}
-
-</style>
+    button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 12px;
+      border-radius: 25px;
+      border: none;
+      background: rgba(255,255,255,0.5);
+      font-size: 18px;
+      font-weight: bold;
+    }
+  </style>
 </head>
 
 <body>
 
 <!-- LOGIN CHECK -->
 <script>
-if(localStorage.getItem("login")!="true"){
-  window.location.href="index.html";
+if(localStorage.getItem("login") != "true"){
+  window.location.href = "index.html";
 }
 </script>
 
@@ -110,7 +95,7 @@ if(localStorage.getItem("login")!="true"){
 
   <div class="card">
     <b>⚠ Alerts</b><br><br>
-    <span id="alert">...</span>
+    <span id="alert">--</span>
   </div>
 
 </div>
@@ -119,7 +104,7 @@ if(localStorage.getItem("login")!="true"){
 
 </div>
 
-<!-- Leaflet -->
+<!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script>
@@ -127,41 +112,49 @@ if(localStorage.getItem("login")!="true"){
 // MAP
 var map = L.map('map').setView([12.97, 77.59], 13);
 
-L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap'
 }).addTo(map);
 
 var marker = L.marker([12.97, 77.59]).addTo(map);
 
-// LIVE DATA
+// 🔥 FIREBASE LIVE FETCH
 setInterval(() => {
+  fetch("https://vehicle-tracking-fc726-default-rtdb.asia-southeast1.firebasedatabase.app/vehicle.json")
+    .then(res => res.json())
+    .then(data => {
 
-  let lat = 12.97 + (Math.random() * 0.01);
-  let lng = 77.59 + (Math.random() * 0.01);
-  let speed = Math.random() * 120;
+      if(!data) return;
 
-  document.getElementById("lat").innerText = lat.toFixed(5);
-  document.getElementById("lng").innerText = lng.toFixed(5);
+      let lat = data.lat;
+      let lng = data.lng;
+      let speed = data.speed;
 
-  document.getElementById("speed").innerText = speed.toFixed(1) + " km/h";
+      document.getElementById("lat").innerText = lat.toFixed(5);
+      document.getElementById("lng").innerText = lng.toFixed(5);
+      document.getElementById("speed").innerText = speed.toFixed(1) + " km/h";
 
-  if(speed > 60){
-    document.getElementById("alert").innerText = "🚨";
-    document.getElementById("alert").style.color = "red";
-  } else {
-    document.getElementById("alert").innerText = "✅";
-    document.getElementById("alert").style.color = "green";
-  }
+      // ALERT LOGIC
+      if (speed > 60) {
+        document.getElementById("alert").innerText = "🚨 Overspeed!";
+        document.getElementById("alert").style.color = "red";
+      } else {
+        document.getElementById("alert").innerText = "✅ Normal";
+        document.getElementById("alert").style.color = "green";
+      }
 
-  marker.setLatLng([lat, lng]);
-  map.setView([lat, lng]);
+      marker.setLatLng([lat, lng]);
+      map.setView([lat, lng]);
 
+    })
+    .catch(err => console.log(err));
 }, 3000);
+
 
 // LOGOUT
 function logout(){
   localStorage.removeItem("login");
-  window.location.href="index.html";
+  window.location.href = "index.html";
 }
 
 </script>
